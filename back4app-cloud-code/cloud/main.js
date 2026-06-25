@@ -1,5 +1,4 @@
-Parse.Cloud.define("submitContactSubmission", async (request) => {
-  const payload = request.params || {};
+async function saveContactSubmission(payload) {
   const requiredFields = [
     "firstName",
     "lastName",
@@ -39,4 +38,8 @@ Parse.Cloud.define("submitContactSubmission", async (request) => {
     ok: true,
     objectId: submission.id
   };
+}
+
+Parse.Cloud.define("submitContactSubmission", async (request) => {
+  return saveContactSubmission(request.params || {});
 });

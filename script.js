@@ -91,7 +91,7 @@ if (contactForm) {
     formData.parseClass = contactForm.dataset.parseClass || "ContactSubmission";
 
     if (!CONTACT_FORM_ENDPOINT) {
-      console.info("ContactSubmission payload ready for server-side Back4App submission", formData);
+      console.info("ContactSubmission payload ready for Back4App Web Hosting endpoint", formData);
       errorMessage.textContent = "Online submission is not configured yet. Please call (615) 720-7568.";
       errorMessage.hidden = false;
       return;

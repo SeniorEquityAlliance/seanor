@@ -32,23 +32,30 @@ Security notes:
 
 ## Frontend Integration
 
-The static site reads an optional browser variable named `SEA_CONTACT_FORM_ENDPOINT`. This should point to a keyless server endpoint controlled by the project owner. Do not set this value to a raw Parse REST class URL if that requires publishing Back4App keys in frontend code.
+The static site reads an optional browser variable named `SEA_CONTACT_FORM_ENDPOINT`. This should point to a keyless Back4App Web Hosting endpoint controlled by the project owner. Do not set this value to a raw Parse REST class URL if that requires publishing Back4App keys in frontend code.
 
 Example runtime configuration, stored outside the public repo or injected by a secure hosting layer:
 
-```html
-<script>
-  window.SEA_CONTACT_FORM_ENDPOINT = "https://example-secure-endpoint.com/contact";
-</script>
+```js
+window.SEA_CONTACT_FORM_ENDPOINT = "https://YOUR-BACK4APP-SUBDOMAIN.back4app.io/contact-submission";
 ```
 
-If no endpoint is configured, the form validates locally and shows a phone fallback instead of pretending the submission was stored.
+The committed `runtime-config.js` intentionally contains no secrets. If no endpoint is configured, the form validates locally and shows a phone fallback instead of pretending the submission was stored.
 
 ## Back4App Cloud Code Template
 
-A starter Cloud Code handler is included at `back4app-cloud-code/contact-submission.js`. It saves validated submissions to the `ContactSubmission` Parse class with `useMasterKey: true` on the server side.
+A starter Cloud Code handler is included at `back4app-cloud-code/cloud/main.js`. A Back4App Web Hosting route is included at `back4app-cloud-code/cloud/app.js`. Together, they expose a keyless `POST /contact-submission` endpoint and save validated submissions to the `ContactSubmission` Parse class with `useMasterKey: true` on the server side.
 
-After deploying that Cloud Code in Back4App, expose it only through a flow that does not require publishing privileged keys in this GitHub Pages frontend. If a thin serverless proxy is needed, keep all Parse credentials in that proxy's environment variables.
+After deploying these files in Back4App and enabling Web Hosting, set `SEA_CONTACT_FORM_ENDPOINT` to the hosted `/contact-submission` URL. Keep all Parse credentials in Back4App or environment variables.
+
+Back4App file layout:
+
+```text
+cloud/
+  app.js
+  main.js
+  package.json
+```
 
 ## Environment Variables
 
