@@ -67,7 +67,7 @@ BACK4APP_PARSE_SERVER_URL = "https://parseapi.back4app.com"
 After the Worker is deployed, set the static site runtime config:
 
 ```js
-window.SEA_CONTACT_FORM_ENDPOINT = "https://YOUR-WORKER.workers.dev/contact-submission";
+window.SEA_CONTACT_FORM_ENDPOINT = "https://senior-equity-alliance-contact.wes-hager78.workers.dev/contact-submission";
 ```
 
 ## Server Endpoint Integration
@@ -84,7 +84,9 @@ The committed `runtime-config.js` intentionally contains no secrets. If no endpo
 
 ## Back4App Cloud Code Template
 
-A starter Cloud Code handler is included at `back4app-cloud-code/cloud/main.js`. A Back4App Web Hosting route is included at `back4app-cloud-code/cloud/app.js`. Together, they expose a keyless `POST /contact-submission` endpoint and save validated submissions to the `ContactSubmission` Parse class with `useMasterKey: true` on the server side.
+A starter Cloud Code handler is included at `back4app-cloud-code/cloud/main.js` for reference. The production contact form uses the Cloudflare Worker proxy because Back4App Web Hosting is not available on the current plan.
+
+Do not add global body parsing middleware to `back4app-cloud-code/cloud/app.js`; it can interfere with Back4App's Parse REST API and cause `stream is not readable` errors on object creation.
 
 After deploying these files in Back4App and enabling Web Hosting, set `SEA_CONTACT_FORM_ENDPOINT` to the hosted `/contact-submission` URL. Keep all Parse credentials in Back4App or environment variables.
 

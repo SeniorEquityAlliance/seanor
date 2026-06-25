@@ -15,7 +15,7 @@ Static GitHub Pages-ready website for Senior Equity Alliance.
 - `styles.css` - responsive design system and layout
 - `script.js` - mobile navigation and client-side form validation
 - `assets/senior-equity-hero.jpg` - original generated hero image for this project
-- `back4app-cloud-code/cloud/` and `back4app-cloud-code/public/` - Back4App Cloud Code and Web Hosting endpoint files for the `ContactSubmission` class
+- `back4app-cloud-code/cloud/` - Back4App Cloud Code reference files for the `ContactSubmission` class
 - `runtime-config.js` - public non-secret endpoint configuration for the contact form
 - `config.example.js` - runtime endpoint configuration example, without Parse keys
 - `cloudflare-worker/` - Cloudflare Worker proxy for creating `ContactSubmission` PFObjects without public keys
