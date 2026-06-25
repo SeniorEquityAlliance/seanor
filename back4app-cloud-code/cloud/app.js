@@ -1,6 +1,6 @@
 const bodyParser = require("body-parser");
 
-require("./main");
+const { saveContactSubmission } = require("./main");
 
 app.use(bodyParser.json());
 
@@ -30,9 +30,7 @@ app.use((request, response, next) => {
 
 app.post("/contact-submission", async (request, response) => {
   try {
-    const result = await Parse.Cloud.run("submitContactSubmission", request.body || {}, {
-      useMasterKey: true
-    });
+    const result = await saveContactSubmission(request.body || {});
 
     response.status(201).json({
       ok: true,

@@ -43,3 +43,7 @@ async function saveContactSubmission(payload) {
 Parse.Cloud.define("submitContactSubmission", async (request) => {
   return saveContactSubmission(request.params || {});
 });
+
+module.exports = {
+  saveContactSubmission
+};

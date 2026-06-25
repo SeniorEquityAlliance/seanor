@@ -55,6 +55,8 @@ cloud/
   app.js
   main.js
   package.json
+public/
+  health.txt
 ```
 
 ## Environment Variables
