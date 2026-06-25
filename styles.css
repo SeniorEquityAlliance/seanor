@@ -636,13 +636,22 @@ blockquote {
   width: 100%;
 }
 
-.form-success {
+.form-success,
+.form-error {
   margin: 1rem 0 0;
   padding: 1rem;
   border-radius: var(--radius);
+  font-weight: 800;
+}
+
+.form-success {
   background: #e8f3e7;
   color: #174d2c;
-  font-weight: 800;
+}
+
+.form-error {
+  background: #f8e9e4;
+  color: #8b2c1e;
 }
 
 .site-footer {

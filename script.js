@@ -1,6 +1,7 @@
 const navToggle = document.querySelector("[data-nav-toggle]");
 const navMenu = document.querySelector("[data-nav-menu]");
 const contactForm = document.querySelector("#contact-form");
+const CONTACT_FORM_ENDPOINT = window.SEA_CONTACT_FORM_ENDPOINT || "";
 
 if (navToggle && navMenu) {
   navToggle.addEventListener("click", () => {
@@ -58,6 +59,8 @@ function validateField(field) {
 if (contactForm) {
   const fields = Array.from(contactForm.querySelectorAll("input, select, textarea"));
   const successMessage = contactForm.querySelector(".form-success");
+  const errorMessage = contactForm.querySelector(".form-error");
+  const submitButton = contactForm.querySelector(".form-submit");
 
   fields.forEach((field) => {
     field.addEventListener("blur", () => validateField(field));
@@ -68,8 +71,10 @@ if (contactForm) {
     });
   });
 
-  contactForm.addEventListener("submit", (event) => {
+  contactForm.addEventListener("submit", async (event) => {
     event.preventDefault();
+    successMessage.hidden = true;
+    errorMessage.hidden = true;
 
     const validationResults = fields.map((field) => validateField(field));
     const isValid = validationResults.every(Boolean);
@@ -83,17 +88,43 @@ if (contactForm) {
     const formData = Object.fromEntries(new FormData(contactForm).entries());
     formData.consent = contactForm.consent.checked;
     formData.sourcePage = window.location.pathname || "/";
+    formData.parseClass = contactForm.dataset.parseClass || "ContactSubmission";
 
-    /*
-      Future Back4App / Parse integration point:
-      Send formData to a Parse Cloud Code function or a locked-down Parse class.
-      Do not put Parse master keys or other secrets in frontend code.
-      See BACK4APP_FORM_INTEGRATION.md for the expected fields and security notes.
-    */
-    console.info("Contact form ready for future Back4App submission", formData);
+    if (!CONTACT_FORM_ENDPOINT) {
+      console.info("ContactSubmission payload ready for server-side Back4App submission", formData);
+      errorMessage.textContent = "Online submission is not configured yet. Please call (615) 720-7568.";
+      errorMessage.hidden = false;
+      return;
+    }
+
+    submitButton.disabled = true;
+    submitButton.textContent = "Submitting...";
+
+    try {
+      const response = await fetch(CONTACT_FORM_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(formData)
+      });
+
+      if (!response.ok) {
+        throw new Error(`Submission failed with status ${response.status}`);
+      }
+    } catch (error) {
+      console.error("ContactSubmission request failed", error);
+      errorMessage.textContent = "We could not send your message right now. Please call (615) 720-7568 or try again soon.";
+      errorMessage.hidden = false;
+      submitButton.disabled = false;
+      submitButton.textContent = "Submit Inquiry";
+      return;
+    }
 
     contactForm.reset();
     fields.forEach((field) => setFieldError(field, ""));
+    submitButton.disabled = false;
+    submitButton.textContent = "Submit Inquiry";
 
     if (successMessage) {
       successMessage.hidden = false;

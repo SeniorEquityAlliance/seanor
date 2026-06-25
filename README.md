@@ -15,6 +15,7 @@ Static GitHub Pages-ready website for Senior Equity Alliance.
 - `styles.css` - responsive design system and layout
 - `script.js` - mobile navigation and client-side form validation
 - `assets/senior-equity-hero.jpg` - original generated hero image for this project
+- `back4app-cloud-code/contact-submission.js` - Back4App Cloud Code template for the `ContactSubmission` class
 - `DEPLOYMENT_CONTRACT.md` - deployment safety rules
 - `DESIGN_CONTRACT.md` - design system and clone-boundary rules
 - `BACK4APP_FORM_INTEGRATION.md` - future Parse/Back4App form integration notes
@@ -45,6 +46,6 @@ The only allowed repository is `SeniorEquityAlliance/seanor`. Do not publish, mi
 
 ## Form and Backend Status
 
-The contact/referral form is currently static and client-side only. It validates fields in the browser, prevents default submission, and shows a success message. It does not store data or send email yet.
+The contact/referral form validates fields in the browser and is wired for a future keyless server endpoint through `SEA_CONTACT_FORM_ENDPOINT`. The frontend does not contain Back4App credentials.
 
-Future backend work should use Parse hosted on Back4App. See `BACK4APP_FORM_INTEGRATION.md` for the suggested class name, fields, and security notes.
+Backend work should use Parse hosted on Back4App and save records to the `ContactSubmission` class. See `BACK4APP_FORM_INTEGRATION.md` for the fields, Cloud Code template, and security notes.
