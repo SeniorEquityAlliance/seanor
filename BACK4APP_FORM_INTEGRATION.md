@@ -1,6 +1,6 @@
 # Back4App Form Integration
 
-The contact/referral form validates required fields in the browser and is wired to send a `ContactSubmission` payload to a configurable server-side endpoint. The public GitHub Pages frontend must not contain Back4App keys.
+The contact/referral form validates required fields in the browser and submits to a keyless serverless proxy endpoint. The proxy creates a `ContactSubmission` PFObject in Parse using Back4App keys stored as server-side secrets.
 
 Future backend work should use Parse hosted at `www.back4app.com`.
 
@@ -25,19 +25,59 @@ Security notes:
 
 - Do not put master keys in frontend code.
 - Do not put REST API keys, webhook keys, or other privileged Back4App credentials in frontend code.
+- Do not create `ContactSubmission` directly from GitHub Pages if the project requires keys to remain private.
 - Use Back4App Cloud Code if sensitive routing, notifications, spam filtering, or email forwarding is needed.
 - Consider reCAPTCHA, hCaptcha, or similar anti-spam protection later.
 - Use environment variables or Back4App configuration for credentials and notification settings.
 - Validate and sanitize form input server-side before storing or forwarding any submission.
 
-## Frontend Integration
+## Serverless Proxy Integration
 
-The static site reads an optional browser variable named `SEA_CONTACT_FORM_ENDPOINT`. This should point to a keyless Back4App Web Hosting endpoint controlled by the project owner. Do not set this value to a raw Parse REST class URL if that requires publishing Back4App keys in frontend code.
+Direct PFObject creation does not require Back4App Web Hosting, but it does require Parse credentials. Because this project must not expose those credentials publicly, use a proxy endpoint.
+
+The included Cloudflare Worker at `cloudflare-worker/worker.js` accepts a keyless browser request and then calls Parse server-side:
+
+```text
+GitHub Pages form
+-> Cloudflare Worker /contact-submission
+-> Back4App Parse REST API /classes/ContactSubmission
+```
+
+Configure these as Cloudflare Worker secrets:
+
+```bash
+cd cloudflare-worker
+wrangler secret put BACK4APP_PARSE_APPLICATION_ID
+wrangler secret put BACK4APP_PARSE_MASTER_KEY
+wrangler deploy
+```
+
+Optional fallback if the class permissions allow it:
+
+```bash
+wrangler secret put BACK4APP_PARSE_REST_API_KEY
+```
+
+The worker also uses this non-secret variable:
+
+```js
+BACK4APP_PARSE_SERVER_URL = "https://parseapi.back4app.com"
+```
+
+After the Worker is deployed, set the static site runtime config:
+
+```js
+window.SEA_CONTACT_FORM_ENDPOINT = "https://YOUR-WORKER.workers.dev/contact-submission";
+```
+
+## Server Endpoint Integration
+
+The static site reads an optional browser variable named `SEA_CONTACT_FORM_ENDPOINT`. This should point to a keyless server endpoint controlled by the project owner. Do not set this value to a raw Parse REST class URL because that would require publishing Back4App keys in frontend code.
 
 Example runtime configuration, stored outside the public repo or injected by a secure hosting layer:
 
 ```js
-window.SEA_CONTACT_FORM_ENDPOINT = "https://YOUR-BACK4APP-SUBDOMAIN.back4app.io/contact-submission";
+window.SEA_CONTACT_FORM_ENDPOINT = "https://YOUR-WORKER.workers.dev/contact-submission";
 ```
 
 The committed `runtime-config.js` intentionally contains no secrets. If no endpoint is configured, the form validates locally and shows a phone fallback instead of pretending the submission was stored.

@@ -1,0 +1,6 @@
+name = "senior-equity-alliance-contact"
+main = "worker.js"
+compatibility_date = "2026-06-25"
+
+[vars]
+BACK4APP_PARSE_SERVER_URL = "https://parseapi.back4app.com"

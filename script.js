@@ -56,6 +56,38 @@ function validateField(field) {
   return !message;
 }
 
+function buildSubmissionPayload(form) {
+  const formData = Object.fromEntries(new FormData(form).entries());
+
+  return {
+    firstName: formData.firstName,
+    lastName: formData.lastName,
+    email: formData.email,
+    phone: formData.phone,
+    requesterType: formData.requesterType,
+    subject: formData.subject,
+    message: formData.message,
+    consent: form.consent.checked,
+    sourcePage: window.location.pathname || "/"
+  };
+}
+
+async function submitToEndpoint(payload) {
+  const response = await fetch(CONTACT_FORM_ENDPOINT, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
+  });
+
+  if (!response.ok) {
+    throw new Error(`Endpoint submission failed with status ${response.status}`);
+  }
+
+  return response.json();
+}
+
 if (contactForm) {
   const fields = Array.from(contactForm.querySelectorAll("input, select, textarea"));
   const successMessage = contactForm.querySelector(".form-success");
@@ -85,13 +117,11 @@ if (contactForm) {
       return;
     }
 
-    const formData = Object.fromEntries(new FormData(contactForm).entries());
-    formData.consent = contactForm.consent.checked;
-    formData.sourcePage = window.location.pathname || "/";
-    formData.parseClass = contactForm.dataset.parseClass || "ContactSubmission";
+    const parseClass = contactForm.dataset.parseClass || "ContactSubmission";
+    const payload = buildSubmissionPayload(contactForm);
 
     if (!CONTACT_FORM_ENDPOINT) {
-      console.info("ContactSubmission payload ready for Back4App Web Hosting endpoint", formData);
+      console.info("ContactSubmission payload ready for Parse submission", payload);
       errorMessage.textContent = "Online submission is not configured yet. Please call (615) 720-7568.";
       errorMessage.hidden = false;
       return;
@@ -101,17 +131,7 @@ if (contactForm) {
     submitButton.textContent = "Submitting...";
 
     try {
-      const response = await fetch(CONTACT_FORM_ENDPOINT, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(formData)
-      });
-
-      if (!response.ok) {
-        throw new Error(`Submission failed with status ${response.status}`);
-      }
+      await submitToEndpoint({ ...payload, parseClass });
     } catch (error) {
       console.error("ContactSubmission request failed", error);
       errorMessage.textContent = "We could not send your message right now. Please call (615) 720-7568 or try again soon.";

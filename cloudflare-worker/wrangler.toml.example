@@ -1,0 +1,12 @@
+name = "senior-equity-alliance-contact"
+main = "worker.js"
+compatibility_date = "2026-06-25"
+
+[vars]
+BACK4APP_PARSE_SERVER_URL = "https://parseapi.back4app.com"
+
+# Configure these as Cloudflare Worker secrets, not vars:
+# wrangler secret put BACK4APP_PARSE_APPLICATION_ID
+# wrangler secret put BACK4APP_PARSE_MASTER_KEY
+# Optional fallback if not using the master key:
+# wrangler secret put BACK4APP_PARSE_REST_API_KEY

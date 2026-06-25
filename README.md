@@ -18,6 +18,7 @@ Static GitHub Pages-ready website for Senior Equity Alliance.
 - `back4app-cloud-code/cloud/` and `back4app-cloud-code/public/` - Back4App Cloud Code and Web Hosting endpoint files for the `ContactSubmission` class
 - `runtime-config.js` - public non-secret endpoint configuration for the contact form
 - `config.example.js` - runtime endpoint configuration example, without Parse keys
+- `cloudflare-worker/` - Cloudflare Worker proxy for creating `ContactSubmission` PFObjects without public keys
 - `DEPLOYMENT_CONTRACT.md` - deployment safety rules
 - `DESIGN_CONTRACT.md` - design system and clone-boundary rules
 - `BACK4APP_FORM_INTEGRATION.md` - future Parse/Back4App form integration notes
@@ -48,6 +49,6 @@ The only allowed repository is `SeniorEquityAlliance/seanor`. Do not publish, mi
 
 ## Form and Backend Status
 
-The contact/referral form validates fields in the browser and is wired for a keyless Back4App Web Hosting endpoint through `SEA_CONTACT_FORM_ENDPOINT`. The frontend does not contain Back4App credentials.
+The contact/referral form validates fields in the browser and submits through a keyless endpoint via `SEA_CONTACT_FORM_ENDPOINT`. Use the Cloudflare Worker proxy when Back4App keys must remain private.
 
 Backend work should use Parse hosted on Back4App and save records to the `ContactSubmission` class. See `BACK4APP_FORM_INTEGRATION.md` for the fields, Cloud Code route, and security notes.
